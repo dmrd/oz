@@ -1,4 +1,4 @@
 oz
 ==
 
-Authentication using leap motion
+Authentication using Leap Motion.  Created for COS436 - Human Computer Interaction
