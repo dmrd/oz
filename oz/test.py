@@ -3,14 +3,10 @@
 import Leap, time
 
 def getFingerBase(hand, finger):
-    palmPos = hand.palm_position
     palmDir = hand.direction
     fingerDir = finger.direction
-    fingerLen = finger.length
-    fingerPos = finger.tip_position
 
-    fingerBase = fingerPos - fingerDir * fingerLen - palmPos
-    fingerBase = fingerBase.cross(palmDir)
+    fingerBase = fingerDir.cross(palmDir)
     return fingerBase
 
 def main():
