@@ -1,3 +1,5 @@
+# Trains svm based on saved images
+#
 import cv2
 from sklearn import svm
 import os, pickle
@@ -17,6 +19,8 @@ def getLabel(name):
         labelIDs[name] = len(labelIDs)
         idLabels[len(labelIDs)-1] = name
         return labelIDs[name]
+
+print("Training SVM based on {0} datapoints".format(len(os.listdir(directory))))
 
 #Read in training data
 for name in os.listdir(directory):
