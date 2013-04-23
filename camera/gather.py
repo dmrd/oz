@@ -7,12 +7,14 @@ import numpy as np
 from sklearn import svm
 
 
-labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist", "peace", "rockOn", "bullhorns", "spock", "inverted_spock", "index_middle_ring", "cross_middle_index"]
-framesPerLabel = 20
+labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist", "peace", "rockOn", "bullhorns", "spock", "inverted_spock", "index_middle_ring", "cross_middle_index", "trigger"]
+framesPerLabel = 30
 
 outputDirectory = "./" + sys.argv[1]
 
-sizeBound = 20000 #Smallest bounding box accepted
+sizeBound = 30000 #Smallest bounding box accepted
+
+threshold = 65
 
 #Returns (size, contour, bbox) of largest contour
 def getLargestContour(contours):
@@ -41,7 +43,7 @@ def getFeatures(img):
 def getHand(c):
     _,im = c.read()
     imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    ret,thresh = cv2.threshold(imgray,75,256,1)
+    ret,thresh = cv2.threshold(imgray,threshold,256,1)
     contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     large = getLargestContour(contours)
     hand = np.zeros((len(thresh),len(thresh[0])), np.uint8) #Black image

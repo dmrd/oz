@@ -9,11 +9,11 @@ imageID = 0 #Save images as image{id}.png
 
 #Font stuff
 font = cv2.FONT_HERSHEY_PLAIN
-text_color = (255,255,0)
+text_color = (255,255,255)
 
-threshold = 80
+threshold = 65
 THRESH_METHOD = 1 #1 to target darker blobs, 0 to target lighter ones
-sizeBound = 20000 #Smallest bounding box accepted
+sizeBound = 30000 #Smallest bounding box accepted
 
 #Returns (size, contour, bbox) of largest contour
 def getLargestContour(contours):
@@ -22,7 +22,7 @@ def getLargestContour(contours):
         x,y,w,h = cv2.boundingRect(contour)
         if (w*h < sizeBound):
             continue
-        print(w*h)
+        #print(w*h)
         sContours.append((w*h,contour,(x,y,w,h)))
     sContours.sort(key=lambda e: e[0])
     if (len(sContours) > 0):
@@ -46,7 +46,7 @@ while(1):
     hand = np.zeros((len(thresh),len(thresh[0])), np.uint8) #Black image
     if (large != None):
         #Draw largest contour by itself and over image
-        cv2.drawContours(imgray,[large[1]],-1,(255,0,0),-1)
+        cv2.drawContours(im,[large[1]],-1,(255,0,0),-1)
         cv2.drawContours(hand,[large[1]],-1,(255,0,0),-1)
 
 
@@ -63,10 +63,10 @@ while(1):
 
     if (clf != None):
         handClass = ids[clf.predict(hand.flatten())[0]]
-        print(handClass)
-        cv2.putText(imgray, handClass, (30,400), font, 3.0, text_color)
+        #print(handClass)
+        cv2.putText(im, handClass, (30,440), font, 4.0, text_color,thickness=5)
 
-    cv2.imshow('e2',imgray)
+    cv2.imshow('e2',im)
     cv2.imshow('e1',hand)
     k = cv2.waitKey(5)
     #print(k)
