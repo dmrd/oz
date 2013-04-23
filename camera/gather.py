@@ -7,19 +7,26 @@ import numpy as np
 from sklearn import svm
 
 
-labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist"]
-framesPerLabel = 10
+labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist", "peace", "rockOn", "bullhorns", "spock", "inverted_spock", "index_middle_ring", "cross_middle_index"]
+framesPerLabel = 20
 
 outputDirectory = "./" + sys.argv[1]
+
+sizeBound = 20000 #Smallest bounding box accepted
 
 #Returns (size, contour, bbox) of largest contour
 def getLargestContour(contours):
     sContours = []
     for contour in contours:
         x,y,w,h = cv2.boundingRect(contour)
+        if (w*h < sizeBound):
+            continue
         sContours.append((w*h,contour,(x,y,w,h)))
     sContours.sort(key=lambda e: e[0])
-    return sContours[-1]
+    if (len(sContours) > 0):
+        return sContours[-1]
+    else:
+        return None
 
 def getFeatures(img):
     detector = cv2.FeatureDetector_create('SIFT')
@@ -36,26 +43,28 @@ def getHand(c):
     imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     ret,thresh = cv2.threshold(imgray,75,256,1)
     contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-    if (len(contours) > 0):
-        large = getLargestContour(contours)
+    large = getLargestContour(contours)
+    hand = np.zeros((len(thresh),len(thresh[0])), np.uint8) #Black image
+    if (large != None):
+        #Draw largest contour by itself and over image
         cv2.drawContours(imgray,[large[1]],-1,(255,0,0),-1)
-        cv2.drawContours(thresh,[large[1]],-1,(255,0,0),-1)
+        cv2.drawContours(hand,[large[1]],-1,(255,0,0),-1)
 
-        #keys, desc = getFeatures(imgray)
-        #cv2.drawKeypoints(imgray,keys)
 
+        #Crop hand only image down and resize
         x,y,w,h = large[2]
-        cropped = thresh[y:y+h, x:x+w]
-        cv2.rectangle(imgray,(x,y),(x+w,y+h),(0,255,0),2)
+        hand = hand[y:y+h, x:x+w]
+        hand = cv2.resize(hand, (256,512))
 
-        #im = cv2.resize(cropped, (512,256))
-        im = cv2.resize(cropped, (256,512))
+        #Draw rectangle around region on feed
+        cv2.rectangle(imgray,(x,y),(x+w,y+h),(0,255,0),2)
     else:
-        im = cv2.resize(thresh, (256,512))
+        #No largest, so just an empty image
+        hand = cv2.resize(hand, (256,512))
 
     cv2.imshow('e2',imgray)
-    cv2.imshow('e1',im)
-    return imgray, im
+    cv2.imshow('e1',hand)
+    return imgray, hand
 
 #Delay while still showing hand.
 def captureDelay(seconds):
@@ -66,7 +75,7 @@ def captureDelay(seconds):
             exit()
 
 
-c = cv2.VideoCapture(0)
+c = cv2.VideoCapture(1)
 for second in range(9,0,-1):
     print("Beginning captures in {0} seconds...".format(second))
     captureDelay(1)

@@ -2,9 +2,10 @@
 #
 import cv2
 from sklearn import svm
-import os, pickle
+import os, pickle, sys
 
-directory = "./train"
+directory = sys.argv[1]
+#"./train"
 
 images = []
 labels = []
