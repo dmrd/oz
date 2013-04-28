@@ -4,8 +4,8 @@ import cv2
 from sklearn import svm
 import os, pickle, sys
 
+#Directory to pull training images from
 directory = sys.argv[1]
-#"./train"
 
 images = []
 labels = []
@@ -34,11 +34,6 @@ for name in os.listdir(directory):
     label = name.split("-")[0]
     print(name + " : " + label)
     labels.append(getLabel(label))
-    #print(img)
-    #cv2.imshow('img', img)
-    #if cv2.waitKey(-1) == 27:
-        #break
-#cv2.destroyAllWindows()
 
 
 #Train
