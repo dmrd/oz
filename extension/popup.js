@@ -12,7 +12,7 @@ var QUERY = 'puppies';
 
 function FBlogin() {
     chrome.tabs.executeScript({
-      code: 'document.getElementById("email").value = "shbhrsaha@gmail.com"; document.getElementById("pass").value = "b1b1b1b!"; document.getElementById("login_form").submit();'
+      code: 'document.getElementById("email").value = ""; document.getElementById("pass").value = ""; document.getElementById("login_form").submit();'
       });
 }
 
