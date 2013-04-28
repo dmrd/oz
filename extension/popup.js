@@ -10,19 +10,24 @@
  */
 var QUERY = 'puppies';
 
-loginFacebook(){
-    var s = document.createElement('script');
-    s.src = chrome.extension.getURL("login.js");
-    s.onload = function() {
-        this.parentNode.removeChild(this);
-    };
-    (document.head||document.documentElement).appendChild(s);
+function FBlogin() {
+    chrome.tabs.executeScript({
+      code: 'document.getElementById("email").value = "shbhrsaha@gmail.com"; document.getElementById("pass").value = "b1b1b1b!"; document.getElementById("login_form").submit();'
+      });
 }
 
 // Run our kitten generation script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
-    //setTimeout(loginFacebook(), 5000);
-    alert("Hello ");
-      loginFacebook();
-      alert("World!");
+    
+      $.get('http://10.9.64.75:8888/status.txt', function(data) {
+            
+            if (data == "TRUE"){
+            
+            FBlogin();
+            
+            }
+            
+            
+        });
+                          
 });
