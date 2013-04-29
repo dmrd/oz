@@ -2,6 +2,7 @@
 #Author: David Dohan
 
 import cv2
+import sys
 import numpy as np
 import pickle
 import acquire
@@ -13,17 +14,13 @@ imageID = 0 #Save images as image{id}.png
 font = cv2.FONT_HERSHEY_PLAIN
 text_color = (255,255,255)
 
-threshold = 65
-sizeBound = 30000 #Smallest bounding box accepted
-
-
 #Read in classifier
 if (len(sys.argv) > 1):
     classifierName = sys.argv[1]
 else:
     classifierName = "svmdata"
 
-loaded = acquire.LoadClassifier(classifierName)
+loaded = acquire.LoadFile(classifierName)
 if loaded == None:
     print("Loading classifier failed.")
     exit()
@@ -34,7 +31,7 @@ labels,ids,clf = loaded
 c = acquire.Setup()
 
 while(1):
-    im, hand = acquire.GetHand(c, threshold)
+    im, hand = acquire.GetHand(c)
 
     if (clf != None):
         handClass = ids[clf.predict(hand.flatten())[0]]

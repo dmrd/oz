@@ -46,3 +46,4 @@ trained = (labelIDs, idLabels, clf)
 #Save data
 f = open('svmdata', 'w')
 pickle.dump(trained, f)
+f.close()

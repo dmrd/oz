@@ -8,7 +8,7 @@ from sklearn import svm
 import acquire
 
 labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist", "peace", "rockOn", "bullhorns", "spock", "inverted_spock", "index_middle_ring", "cross_middle_index", "trigger"]
-framesPerLabel = 30
+framesPerLabel = 50
 
 outputDirectory = "./" + sys.argv[1]
 

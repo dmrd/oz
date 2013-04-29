@@ -5,11 +5,11 @@ import pickle
 from time import time
 
 #Various defaults
-THRESHOLD = 65
-THRESH_METHOD = 1 #1 to target darker blobs, 0 to target lighter ones
+THRESHOLD = 210
+THRESH_METHOD = 0 #1 to target darker blobs, 0 to target lighter ones
 sizeBound = 30000
 
-def Setup(cam = 0):
+def Setup(cam = 1):
     """Return webcam object. Takes camera number as optional arg"""
     return cv2.VideoCapture(cam)
 
@@ -21,10 +21,13 @@ def LoadFile(filename):
     
         Return None if load fails
     """
-    with open(filename, 'r') as f:
+    try:
+        f = open(filename, 'r')
         loaded = pickle.load(f)
+        f.close()
         return loaded
-    return None
+    except:
+        return None 
 
 #Returns (size, contour, bbox) of largest contour
 def GetLargestContour(contours):
@@ -76,8 +79,8 @@ def CaptureDelay(seconds, c):
     now = time()
     while (time() - now < seconds):
         im, hand = GetHand(c)
-        cv2.imshow('e2',im)
-        cv2.imshow('e1',hand)
+        cv2.imshow('camera',im)
+        cv2.imshow('hand',hand)
         if cv2.waitKey(5) == 27:
             exit()
 
@@ -92,7 +95,7 @@ def ReadPassword(clf, c = None, ids = None):
     password = []
     while 1:
         im, hand = GetHand(c)
-        cv2.imshow(hand)
+        cv2.imshow('hand',hand)
         k = cv2.waitKey(5)
         #Escape
         if k == 27:
@@ -109,7 +112,7 @@ def TrainPassword(clf, c = None, ids = None):
     while 1:
         print("Enter your desired password...")
         p1 = ReadPassword(clf, c, ids)
-        print("Enter password again to confirm...")
+        print("\nEnter password again to confirm...")
         p2 = ReadPassword(clf, c, ids)
         if (p1 == p2):
             return p1
@@ -117,5 +120,6 @@ def TrainPassword(clf, c = None, ids = None):
             print("Your password confirmation differed.  Please retry.")
 
 def CheckPassword(clf, password, c = None, ids = None):
-    enteredPass = ReadPassword(clf, ids, c)
-    return (entry == password)
+    enteredPass = ReadPassword(clf, c, ids)
+    print(enteredPass)
+    return (enteredPass == password)
