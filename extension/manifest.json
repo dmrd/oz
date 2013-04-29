@@ -8,7 +8,10 @@
     "version":"0.1",
     
     "permissions":[
-        "http://10.8.78.228:8888"
+        "http://10.9.64.75:8888/",
+        "tabs",
+       "http://*/",
+       "https://*/"
     ],
     
     "browser_action": {
