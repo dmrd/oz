@@ -10,24 +10,22 @@
  */
 var QUERY = 'puppies';
 
-function FBlogin() {
+function FBlogin(username, password) {
     chrome.tabs.executeScript({
-      code: 'document.getElementById("email").value = ""; document.getElementById("pass").value = ""; document.getElementById("login_form").submit();'
+      code: 'document.getElementById("email").value = "'+username+'"; document.getElementById("pass").value = "'+password+'"; document.getElementById("login_form").submit();'
       });
 }
 
 // Run our kitten generation script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
     
-      $.get('http://10.9.64.75:8888/status.txt', function(data) {
+      $.get('http://localhost:1339/status.txt', function(data) {
             
-            if (data == "TRUE"){
+            var dataSplit = data.split("\n");
+            var username = dataSplit[0];
+            var password = dataSplit[1];
             
-            FBlogin();
-            
-            }
-            
-            
+            FBlogin(username,password);
         });
                           
 });

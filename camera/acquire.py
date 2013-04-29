@@ -121,5 +121,4 @@ def TrainPassword(clf, c = None, ids = None):
 
 def CheckPassword(clf, password, c = None, ids = None):
     enteredPass = ReadPassword(clf, c, ids)
-    print(enteredPass)
     return (enteredPass == password)

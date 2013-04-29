@@ -3,6 +3,22 @@ import pickle
 import sys
 from sklearn import svm
 
+#For sharing to chrome extension
+import socket, sys
+import SimpleHTTPServer
+import SocketServer
+
+#Shares directory - allows 1 reqest to be made
+def ShareFolder():
+    PORT = 1339
+    url = socket.gethostbyname(socket.gethostname()) + ":" + str(PORT)
+    print "Share this link: " + "http://" + url
+    Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+    httpd = SocketServer.TCPServer(("", PORT), Handler)
+    httpd.handle_request()
+
+flagFile = "status.txt"
+
 #Read in classifier
 if (len(sys.argv) < 3):
     print("{0} classifierFile userFile".format(sys.argv[0]))
@@ -23,6 +39,7 @@ if userData == None or type(userData) is not dict:
     print("No userdata found")
     userData = {}
 
+print(userData)
 c = acquire.Setup()
 
 print("Please enter username:")
@@ -31,6 +48,17 @@ if name in userData:
     print("Please enter password:")
     if (acquire.CheckPassword(clf, userData[name]["handshake"], c, ids)):
         print("You successfully entered your password")
+        # lulz lulz lulz
+        # Do not do in real life.  Please.
+        # Writes to file
+        f = open(flagFile, 'wt')
+        f.write("{0}\n{1}\n".format(name,userData[name]["password"]))
+        f.close()
+        #Shares directory for chrome plugin to access
+        ShareFolder()
+        #Clear file
+        f = open(flagFile, 'wt')
+        f.close()
     else:
         print("Incorrect password")
 else:
@@ -38,7 +66,6 @@ else:
     #Testing purposes - does not claim to be secure
     print("Please enter Facebook password:")
     fb = raw_input()
-
     userData[name] = {"handshake" : acquire.TrainPassword(clf, c, ids), "password" : fb}
 
 f = open(userFile, 'w')
