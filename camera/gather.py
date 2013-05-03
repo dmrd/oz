@@ -12,7 +12,8 @@ framesPerLabel = 50
 
 outputDirectory = "./" + sys.argv[1]
 
-c = acquire.Setup()
+camera = acquire.Acquire()
+
 for second in range(9,0,-1):
     print("Beginning captures in {0} seconds...".format(second))
     acquire.CaptureDelay(1, c)
@@ -24,7 +25,7 @@ for label in labels:
 
     #Capture
     for frame in range(framesPerLabel):
-        im, hand = acquire.GetHand(c)
+        im, hand = camera.GetHand()
         cv2.imwrite(outputDirectory + "/" + label + "-" + str(frame) + ".png", hand)
         print("Frame {0} captures".format(frame))
         acquire.CaptureDelay(0.2, c)

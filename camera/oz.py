@@ -40,13 +40,13 @@ if userData == None or type(userData) is not dict:
     userData = {}
 
 print(userData)
-c = acquire.Setup()
+camera = acquire.Acquire()
 
 print("Please enter username:")
 name = raw_input()
 if name in userData:
     print("Please enter password:")
-    if (acquire.CheckPassword(clf, userData[name]["handshake"], c, ids)):
+    if (camera.CheckPassword(clf, userData[name]["handshake"], ids)):
         print("You successfully entered your password")
         # lulz lulz lulz
         # Do not do in real life.  Please.
@@ -66,7 +66,7 @@ else:
     #Testing purposes - does not claim to be secure
     print("Please enter Facebook password:")
     fb = raw_input()
-    userData[name] = {"handshake" : acquire.TrainPassword(clf, c, ids), "password" : fb}
+    userData[name] = {"handshake" : camera.TrainPassword(clf, ids), "password" : fb}
 
 f = open(userFile, 'w')
 pickle.dump(userData, f)

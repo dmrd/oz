@@ -13,6 +13,7 @@ imageID = 0 #Save images as image{id}.png
 #Font stuff
 font = cv2.FONT_HERSHEY_PLAIN
 text_color = (255,255,255)
+threshold = acquire.THRESHOLD
 
 #Read in classifier
 if (len(sys.argv) > 1):
@@ -26,12 +27,10 @@ if loaded == None:
     exit()
 labels,ids,clf = loaded
 
-
-#Get camera
-c = acquire.Setup()
+camera = acquire.Acquire()
 
 while(1):
-    im, hand = acquire.GetHand(c)
+    im, hand = camera.GetHand(threshold)
 
     if (clf != None):
         handClass = ids[clf.predict(hand.flatten())[0]]
