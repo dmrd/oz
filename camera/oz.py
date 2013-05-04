@@ -8,7 +8,7 @@ import socket, sys
 import SimpleHTTPServer
 import SocketServer
 
-#Shares directory - allows 1 reqest to be made
+# Shares directory - allows 1 reqest to be made
 def ShareFolder():
     PORT = 1339
     url = socket.gethostbyname(socket.gethostname()) + ":" + str(PORT)
@@ -17,9 +17,26 @@ def ShareFolder():
     httpd = SocketServer.TCPServer(("", PORT), Handler)
     httpd.handle_request()
 
+def Login(name, userData):
+    print("Logging you into Facebook...")
+    # lulz lulz lulz
+    # Do not do in real life.  Please.
+    # Writes to file
+    f = open(flagFile, 'wt')
+    f.write("{0}\n{1}\n".format(name,userData[name]["password"]))
+    f.close()
+
+    #Shares directory for chrome plugin to access one time
+    ShareFolder()
+
+    #Clear file
+    f = open(flagFile, 'wt')
+    f.close()
+
+# Signals chrome extension to log in
 flagFile = "status.txt"
 
-#Read in classifier
+# Read in classifier
 if (len(sys.argv) < 3):
     print("{0} classifierFile userFile".format(sys.argv[0]))
     exit()
@@ -45,29 +62,22 @@ camera = acquire.Acquire()
 print("Please enter username:")
 name = raw_input()
 if name in userData:
-    print("Please enter password:")
     if (camera.CheckPassword(clf, userData[name]["handshake"], ids)):
         print("You successfully entered your password")
-        # lulz lulz lulz
-        # Do not do in real life.  Please.
-        # Writes to file
-        f = open(flagFile, 'wt')
-        f.write("{0}\n{1}\n".format(name,userData[name]["password"]))
-        f.close()
-        #Shares directory for chrome plugin to access
-        ShareFolder()
-        #Clear file
-        f = open(flagFile, 'wt')
-        f.close()
+        Login(name, userData)
+        exit()
     else:
-        print("Incorrect password")
+        print("You entered an incorrect password multiple times.  Exiting.")
 else:
     print("You still need to set a password.")
     #Testing purposes - does not claim to be secure
     print("Please enter Facebook password:")
     fb = raw_input()
     userData[name] = {"handshake" : camera.TrainPassword(clf, ids), "password" : fb}
+    print("Successfully trained your password.  Logging you into Facebook now.")
+    Login(name, userdata)
 
+# Save the user data back to disk
 f = open(userFile, 'w')
 pickle.dump(userData, f)
 f.close()

@@ -12,14 +12,17 @@ CHANNEL = 1 #r, g, b = 0,1,2
 sizeBound = 30000
 KERNEL = (13,13)
 background = None
+CONSECUTIVE_FRAMES = 3
+ATTEMPTS = 3
 
 class Acquire:
-    def __init__(self, cam = 1):
+    def __init__(self, cam = 1, debug = 0):
         self.c = cv2.VideoCapture(cam)
         self.background = self.GetBackground()
         self.threshold = THRESHOLD
         self.threshold_method = THRESH_METHOD
         self.sizeBound = sizeBound
+        self.debug = debug
     def Setup(cam = 1):
         """Return webcam object. Takes camera number as optional arg"""
         c = cv2.VideoCapture(cam)
@@ -46,11 +49,15 @@ class Acquire:
         #imChannel = cv2.split(im)[CHANNEL]
         #imChannel = cv2.blur(imChannel, KERNEL)
         #diff = cv2.absdiff(imChannel,self.background)
-        #cv2.imshow('diff', diff)
-        #cv2.imshow('back', self.background)
-        #cv2.imshow('chan', imChannel)
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         ret,thresh = cv2.threshold(imgray, threshold, 256, self.threshold_method)
+
+        if (self.debug):
+            cv2.imshow('imgray', imgray)
+            #cv2.imshow('diff', diff)
+            #cv2.imshow('back', self.background)
+            #cv2.imshow('chan', imChannel)
+
         contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         #contours, hierarchy = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         large = GetLargestContour(contours)
@@ -76,38 +83,69 @@ class Acquire:
     #So secure... Trust me...
 
     def ReadPassword(self, clf, ids = None):
-        print("Press the spacebar to record a gesture, escape to end capture.")
-        
-        password = []
-        while 1:
+        #print("Press the spacebar to record a gesture, escape to end capture.")
+        last = None     # Last shape
+        lastCount = 0   # Number of frames with same shape
+        password = []   # Current recorded password
+        quit = False    # Quit flag
+        while not(quit):
             im, hand = self.GetHand()
-            cv2.imshow('hand',hand)
+            if (self.debug):
+                cv2.imshow('hand',hand)
+            #Predict hand shape
+            fit = clf.predict(hand.flatten())[0]
+            #print("{0} {1}".format(lastCount, fit))
+            #How long have they held the current shape?
+            if fit == last:
+                lastCount += 1
+            else:
+                lastCount = 0
+                last = fit
+            if (ids[fit] == "none"):
+                if (lastCount >= CONSECUTIVE_FRAMES and len(password) > 0):
+                    quit = True
+            else:
+                if (lastCount >= CONSECUTIVE_FRAMES and (len(password) == 0 or fit != password[-1])):
+                    password.append(fit)
+                    print(ids[fit])
+
+            #Keyboard buttons to exit
             k = cv2.waitKey(5)
             #Escape
             if k == 27:
                 break
             #Space
             if k == 32:
-                fit = clf.predict(hand.flatten())[0]
                 if ids != None:
                     print(ids[fit])
                 password.append(fit)
         return password
 
     def TrainPassword(self, clf, ids = None):
-        while 1:
-            print("Enter your desired password...")
+        cv2.imshow('Oz', cv2.imread("media/create.png"))
+        while True:
+            #print("Enter your desired password...")
             p1 = self.ReadPassword(clf, ids)
-            print("\nEnter password again to confirm...")
+            cv2.imshow('Oz', cv2.imread("media/confirm.png"))
+            #print("\nEnter password again to confirm...")
             p2 = self.ReadPassword(clf, ids)
             if (p1 == p2):
                 return p1
             else:
-                print("Your password confirmation differed.  Please retry.")
+                cv2.imshow('Oz', cv2.imread("media/reenter.png"))
+                
 
     def CheckPassword(self, clf, password, ids = None):
-        enteredPass = self.ReadPassword(clf, ids)
-        return (enteredPass == password)
+        cv2.imshow('Oz', cv2.imread("media/enter.png"))
+        for attempt in range(ATTEMPTS):
+            print("Reading password...")
+            enteredPass = self.ReadPassword(clf, ids)
+            if (len(enteredPass) == 0):
+                return False
+            if (enteredPass == password):
+                return True
+            else:
+                cv2.imshow('Oz', cv2.imread("media/reenter.png"))
 
     #Delay while still showing hand.
     def CaptureDelay(self, seconds):
@@ -115,8 +153,8 @@ class Acquire:
         now = time()
         while (time() - now < seconds):
             im, hand = self.GetHand()
-            cv2.imshow('camera',im)
-            cv2.imshow('hand',hand)
+            #cv2.imshow('camera',im)
+            #cv2.imshow('hand',hand)
             if cv2.waitKey(5) == 27:
                 exit()
 
@@ -134,9 +172,6 @@ def GetLargestContour(contours):
         return sContours[-1]
     else:
         return None
-
-
-
 
 def FinishCapture():
     cv2.destroyAllWindows()

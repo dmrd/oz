@@ -2,16 +2,28 @@
 
 import pickle
 import sys
+import os
 import cv2
 import numpy as np
 from sklearn import svm
 import acquire
 
 #labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist", "peace", "rockOn", "bullhorns", "spock", "inverted_spock", "index_middle_ring", "cross_middle_index", "trigger"]
-labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist", "peace"]
+labels = ["pinky", "index", "middle", "ring", "thumb", "five_fingers", "none", "fist", "peace", "spock"]
 framesPerLabel = 50
+start = 0
 
 outputDirectory = "./" + sys.argv[1]
+
+for name in os.listdir(outputDirectory):
+    num = os.path.splitext(name)[0].split("-")[1]
+    print(num)
+    try:
+        start = max(start, int(num) + 1)
+    except:
+        pass
+
+print("Starting at {0}".format(start))
 
 camera = acquire.Acquire()
 
@@ -27,7 +39,7 @@ for label in labels:
     #Capture
     for frame in range(framesPerLabel):
         im, hand = camera.GetHand()
-        cv2.imwrite(outputDirectory + "/" + label + "-" + str(frame) + ".png", hand)
+        cv2.imwrite(outputDirectory + "/" + label + "-" + str(start + frame) + ".png", hand)
         print("Frame {0} captures".format(frame))
         camera.CaptureDelay(0.2)
 

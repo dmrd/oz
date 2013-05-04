@@ -2,7 +2,9 @@
 #
 import cv2
 from sklearn import svm
-import os, pickle, sys
+import os
+import pickle
+import sys
 
 #Directory to pull training images from
 directory = sys.argv[1]
