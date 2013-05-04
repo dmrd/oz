@@ -2,11 +2,12 @@
 import cv2
 import numpy as np
 import pickle
+import sys
 from time import time
 
 #Various defaults
-THRESHOLD = 90
-THRESH_METHOD = 0 #1 to target darker blobs, 0 to target lighter ones
+THRESHOLD = 175
+THRESH_METHOD = 1 #1 to target darker blobs, 0 to target lighter ones
 CHANNEL = 1 #r, g, b = 0,1,2
 sizeBound = 30000
 KERNEL = (13,13)
@@ -28,6 +29,7 @@ class Acquire:
         im = self.GetFrame()
         channels = cv2.split(im)
         background = channels[CHANNEL]
+        #background = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         return cv2.blur(background, KERNEL)
 
     # Capture image
@@ -41,17 +43,18 @@ class Acquire:
         if threshold == None:
             threshold = self.threshold
         im = self.GetFrame()
-        imChannel = cv2.split(im)[CHANNEL]
-        imChannel = cv2.blur(imChannel, KERNEL)
-        diff = cv2.absdiff(imChannel,self.background)
-        cv2.imshow('diff', diff)
-        cv2.imshow('back', self.background)
-        cv2.imshow('chan', imChannel)
-        #imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        ret,thresh = cv2.threshold(diff, threshold, 256, self.threshold_method)
+        #imChannel = cv2.split(im)[CHANNEL]
+        #imChannel = cv2.blur(imChannel, KERNEL)
+        #diff = cv2.absdiff(imChannel,self.background)
+        #cv2.imshow('diff', diff)
+        #cv2.imshow('back', self.background)
+        #cv2.imshow('chan', imChannel)
+        imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        ret,thresh = cv2.threshold(imgray, threshold, 256, self.threshold_method)
         contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        #contours, hierarchy = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         large = GetLargestContour(contours)
-        hand = np.zeros((len(thresh),len(thresh[0])), np.uint8) #Black image
+        hand = np.zeros((len(im),len(im[0])), np.uint8) #Black image
         if (large != None):
             #Draw largest contour by itself and over image
             cv2.drawContours(im,[large[1]],-1,(255,0,0),-1)
@@ -106,6 +109,16 @@ class Acquire:
         enteredPass = self.ReadPassword(clf, ids)
         return (enteredPass == password)
 
+    #Delay while still showing hand.
+    def CaptureDelay(self, seconds):
+        """Continue video capture while delaying for # seconds.  Esc exits"""
+        now = time()
+        while (time() - now < seconds):
+            im, hand = self.GetHand()
+            cv2.imshow('camera',im)
+            cv2.imshow('hand',hand)
+            if cv2.waitKey(5) == 27:
+                exit()
 
 #Returns (size, contour, bbox) of largest contour
 def GetLargestContour(contours):
@@ -121,16 +134,7 @@ def GetLargestContour(contours):
         return sContours[-1]
     else:
         return None
-    #Delay while still showing hand.
-    def CaptureDelay(seconds, c):
-        """Continue video capture while delaying for # seconds.  Esc exits"""
-        now = time()
-        while (time() - now < seconds):
-            im, hand = GetHand(c)
-            cv2.imshow('camera',im)
-            cv2.imshow('hand',hand)
-            if cv2.waitKey(5) == 27:
-                exit()
+
 
 
 

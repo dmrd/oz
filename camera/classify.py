@@ -29,6 +29,8 @@ labels,ids,clf = loaded
 
 camera = acquire.Acquire()
 
+print(labels)
+
 while(1):
     im, hand = camera.GetHand(threshold)
 
