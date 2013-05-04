@@ -124,10 +124,12 @@ class Acquire:
     def TrainPassword(self, clf, ids = None):
         cv2.imshow('Oz', cv2.imread("media/create.png"))
         while True:
-            #print("Enter your desired password...")
+            print("Enter your desired password...")
             p1 = self.ReadPassword(clf, ids)
+            if (len(p1) == 0):
+                return p1
             cv2.imshow('Oz', cv2.imread("media/confirm.png"))
-            #print("\nEnter password again to confirm...")
+            print("\nEnter password again to confirm...")
             p2 = self.ReadPassword(clf, ids)
             if (p1 == p2):
                 return p1

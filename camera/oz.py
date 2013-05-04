@@ -73,9 +73,13 @@ else:
     #Testing purposes - does not claim to be secure
     print("Please enter Facebook password:")
     fb = raw_input()
-    userData[name] = {"handshake" : camera.TrainPassword(clf, ids), "password" : fb}
-    print("Successfully trained your password.  Logging you into Facebook now.")
-    Login(name, userdata)
+    password = camera.TrainPassword(clf, ids)
+    if (len(password) == 0):
+        print("You did not enter a password.  Exiting")
+    else:
+        userData[name] = {"handshake" : password, "password" : fb}
+        print("Successfully trained your password.  Logging you into Facebook now.")
+        Login(name, userData)
 
 # Save the user data back to disk
 f = open(userFile, 'w')
