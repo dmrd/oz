@@ -16,16 +16,24 @@ function FBlogin(username, password) {
       });
 }
 
+function periodic() {
+    
+    $.get('http://localhost:8888/status.txt', function(data) {
+          
+          var dataSplit = data.split("\n");
+          var username = dataSplit[0];
+          var password = dataSplit[1];
+          
+          FBlogin(username,password);
+    });
+    
+    setTimeout(function() { periodic(); }, 2000);
+    
+}
+
 // Run our kitten generation script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
     
-      $.get('http://localhost:1339/status.txt', function(data) {
-            
-            var dataSplit = data.split("\n");
-            var username = dataSplit[0];
-            var password = dataSplit[1];
-            
-            FBlogin(username,password);
-        });
+    setTimeout(function() { periodic(); }, 2000);
                           
 });
