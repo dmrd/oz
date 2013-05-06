@@ -10,6 +10,9 @@ import socket, sys
 import SimpleHTTPServer
 import SocketServer
 
+texting.send_text("WELLFINETHEN")
+exit()
+
 # Shares directory - allows 1 reqest to be made
 def ShareFolder():
     SocketServer.TCPServer.allow_reuse_address = True
@@ -79,14 +82,14 @@ if name in userData:
         Login(name, userData)
     else:
         print("You entered an incorrect password multiple times")
-        resp = raw_input("Would you like to reset your password [y/n]?")
-        
-        if resp.lower() is "y" or resp.lower() is "yes":
+        resp = raw_input("Would you like to reset your password [y/n]?\n")
+        print(resp)
+        if resp.lower() == "y" or resp.lower() == "yes":
             print("Sending verification code to registered phone number...")
             send_text("random")
-            resp = raw_input("Please enter the verification code:")
+            resp = raw_input("Please enter the verification code: ")
             
-            if resp is "31415":
+            if resp == "31415":
                 print("Verification code is correct!")
                 print("Beginning password reset procedure.")
 
@@ -98,7 +101,6 @@ if name in userData:
                     SaveUserData(userData)
                     print("Successfully trained your password.  Logging you into Facebook now.")
                     Login(name, userData)
-
         else:
             print("Exiting...")
 else:
