@@ -14,17 +14,17 @@ def send_text(verify_code, from_number = "7039400683", to_number = shu_number):
     -d "From='+from_number+'" \
     -d "To='+to_number+'" \
     -d "Body=Here+is+the+verification+code:+' + verify_code + '" \
-    -u ACb533b2f16cfb7175609f1x`x`652181b5261:e54e3b9c50f16fdd75305beec3e1ed32'
+    -u ACb533b2f16cfb7175609f1652181b5261:e54e3b9c50f16fdd75305beec3e1ed32'
 
     # Segment the command and run it on terminal
     args = shlex.split(command)
     p = subprocess.Popen(args)
     
-# def main():
+def main():
 
-    # code = ''.join(random.choice(string.digits) for x in range(5))
-    # print code
-    # send_text(code)
+    code = ''.join(random.choice(string.digits) for x in range(5))
+    print code
+    send_text(code)
     
-# if __name__ == "__main__":
-    # main()
+if __name__ == "__main__":
+    main()
