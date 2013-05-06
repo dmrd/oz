@@ -5,7 +5,7 @@ shu_number = "8608398690" # Shubhro's number
 and_number = "5712341115" # Andrew's number
 dav_number = "9014386031" # 
 
-def send_text(verify_code, from_number = "7039400683", to_number = and_number):
+def send_text(verify_code, from_number = "7039400683", to_number = shu_number):
 
     # Use Twilio to send text message to designated number with a verification code
     command = 'curl -X POST https://api.twilio.com/2010-04-01/Accounts/ACb533b2f16cfb7175609f1652181b5261/SMS/Messages.xml \
