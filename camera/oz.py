@@ -34,8 +34,6 @@ def Login(name, userData):
     f = open(flagFile, 'wt')
     f.close()
 
-ShareFolder()
-
 # Signals chrome extension to log in
 flagFile = "status.txt"
 
