@@ -13,7 +13,7 @@ sizeBound = 30000
 KERNEL = (13,13)
 background = None
 CONSECUTIVE_FRAMES = 10
-ATTEMPTS = 3
+ATTEMPTS = 1
 
 class Acquire:
     def __init__(self, cam = 1, debug = 0):

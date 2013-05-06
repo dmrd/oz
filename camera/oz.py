@@ -10,8 +10,6 @@ import socket, sys
 import SimpleHTTPServer
 import SocketServer
 
-texting.send_text("WELLFINETHEN")
-exit()
 
 # Shares directory - allows 1 reqest to be made
 def ShareFolder():
@@ -86,7 +84,7 @@ if name in userData:
         print(resp)
         if resp.lower() == "y" or resp.lower() == "yes":
             print("Sending verification code to registered phone number...")
-            send_text("random")
+            texting.send_text("random")
             resp = raw_input("Please enter the verification code: ")
             
             if resp == "31415":
@@ -97,7 +95,7 @@ if name in userData:
                 if (len(password) == 0):
                     print("You did not enter a password.  Exiting")
                 else:
-                    userData[name] = {"handshake" : password, "password" : fb}
+                    userData[name] = {"handshake" : password, "password" : userData[name]["password"]}
                     SaveUserData(userData)
                     print("Successfully trained your password.  Logging you into Facebook now.")
                     Login(name, userData)
