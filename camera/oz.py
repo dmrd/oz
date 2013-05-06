@@ -10,7 +10,8 @@ import SocketServer
 
 # Shares directory - allows 1 reqest to be made
 def ShareFolder():
-    PORT = 1339
+    SocketServer.TCPServer.allow_reuse_address = True
+    PORT = 8765
     url = socket.gethostbyname(socket.gethostname()) + ":" + str(PORT)
     print "Share this link: " + "http://" + url
     Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
@@ -32,6 +33,8 @@ def Login(name, userData):
     #Clear file
     f = open(flagFile, 'wt')
     f.close()
+
+ShareFolder()
 
 # Signals chrome extension to log in
 flagFile = "status.txt"
