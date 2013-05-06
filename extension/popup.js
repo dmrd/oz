@@ -18,7 +18,7 @@ function FBlogin(username, password) {
 
 function periodic() {
     
-    $.get('http://localhost:8888/status.txt', function(data) {
+    $.get('http://localhost:8765/status.txt', function(data) {
           
           var dataSplit = data.split("\n");
           var username = dataSplit[0];
