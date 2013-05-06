@@ -25,6 +25,8 @@ function periodic() {
           var password = dataSplit[1];
           
           FBlogin(username,password);
+          
+          window.close();
     });
     
     setTimeout(function() { periodic(); }, 2000);
