@@ -8,7 +8,7 @@
     "version":"0.1",
     
     "permissions":[
-        "http://localhost:8888/",
+        "http://localhost:8765/",
         "tabs",
        "http://*/",
        "https://*/"
