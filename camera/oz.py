@@ -77,7 +77,6 @@ if name in userData:
     if (camera.CheckPassword(clf, userData[name]["handshake"], ids)):
         print("You successfully entered your password")
         Login(name, userData)
-        exit()
     else:
         print("You entered an incorrect password multiple times")
         resp = raw_input("Would you like to reset your password [y/n]?")
@@ -96,6 +95,7 @@ if name in userData:
                     print("You did not enter a password.  Exiting")
                 else:
                     userData[name] = {"handshake" : password, "password" : fb}
+                    SaveUserData(userData)
                     print("Successfully trained your password.  Logging you into Facebook now.")
                     Login(name, userData)
 
@@ -114,4 +114,3 @@ else:
         SaveUserData(userData)
         print("Successfully trained your password.  Logging you into Facebook now.")
         Login(name, userData)
-
