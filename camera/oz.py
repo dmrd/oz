@@ -34,6 +34,12 @@ def Login(name, userData):
     f = open(flagFile, 'wt')
     f.close()
 
+# Save the user data back to disk
+def SaveUserData(userData):
+    f = open(userFile, 'w')
+    pickle.dump(userData, f)
+    f.close()
+
 # Signals chrome extension to log in
 flagFile = "status.txt"
 
@@ -57,8 +63,11 @@ if userData == None or type(userData) is not dict:
     print("No userdata found")
     userData = {}
 
-print(userData)
-camera = acquire.Acquire()
+#print(userData)
+if (len(sys.argv) > 3):
+    camera = acquire.Acquire(debug = 1)
+else:
+    camera = acquire.Acquire()
 
 print("Please enter username:")
 name = raw_input()
@@ -79,10 +88,7 @@ else:
         print("You did not enter a password.  Exiting")
     else:
         userData[name] = {"handshake" : password, "password" : fb}
+        SaveUserData(userData)
         print("Successfully trained your password.  Logging you into Facebook now.")
         Login(name, userData)
 
-# Save the user data back to disk
-f = open(userFile, 'w')
-pickle.dump(userData, f)
-f.close()
