@@ -1,6 +1,7 @@
 import shlex, subprocess
 import string
 import random
+import os
 shu_number = "8608398690" # Shubhro's number
 and_number = "5712341115" # Andrew's number
 dav_number = "9014386031" # 
@@ -18,7 +19,10 @@ def send_text(verify_code, from_number = "7039400683", to_number = shu_number):
 
     # Segment the command and run it on terminal
     args = shlex.split(command)
-    p = subprocess.Popen(args)
+    nullFile = open(os.devnull, "w")
+    p = subprocess.Popen(args, stdout=nullFile, stderr=nullFile)
+    nullFile.close()
+    p.wait()
     
 def main():
 

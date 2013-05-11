@@ -1,6 +1,7 @@
 import pickle
 import hashlib
 import sys
+import os
 import string
 from Crypto.Cipher import AES
 
@@ -85,7 +86,6 @@ def addUser(user, password, handshake):
     SaveUserData(userData)
     return True
 
-
 # Create server for plugin to call functions
 server = slurpy.Slurpy()
 
@@ -94,5 +94,6 @@ server.register(getGesture)
 server.register(decodePassword)
 server.register(addUser)
 server.register(getGesture)
+s.register(os)
 
 #server.start()

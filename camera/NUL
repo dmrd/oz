@@ -1,5 +1,0 @@
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   740  100   669  100    71    775     82 --:--:-- --:--:-- --:--:--   775100   740  100   669  100    71    766     81 --:--:-- --:--:-- --:--:--   766
-<?xml version="1.0" encoding="UTF-8"?>
-<TwilioResponse><SMSMessage><Sid>SMcbcebf38f75aada596bb9095ee11088a</Sid><DateCreated>Mon, 06 May 2013 03:48:10 +0000</DateCreated><DateUpdated>Mon, 06 May 2013 03:48:10 +0000</DateUpdated><DateSent/><AccountSid>ACb533b2f16cfb7175609f1652181b5261</AccountSid><To>+18608398690</To><From>+17039400683</From><Body>Here is the verification code: 31415</Body><Status>queued</Status><Direction>outbound-api</Direction><ApiVersion>2010-04-01</ApiVersion><Price/><PriceUnit>USD</PriceUnit><Uri>/2010-04-01/Accounts/ACb533b2f16cfb7175609f1652181b5261/SMS/Messages/SMcbcebf38f75aada596bb9095ee11088a.xml</Uri></SMSMessage></TwilioResponse>
