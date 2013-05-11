@@ -1,55 +1,33 @@
-import acquire
 import pickle
+import hashlib
 import sys
+import string
+from Crypto.Cipher import AES
+
+# Our modules
 sys.path.append("../util")
 import texting
+import acquire
+
+#Helper modules
 from sklearn import svm
-
 #For sharing to chrome extension
-import socket, sys
-import SimpleHTTPServer
-import SocketServer
-
-
-# Shares directory - allows 1 reqest to be made
-def ShareFolder():
-    SocketServer.TCPServer.allow_reuse_address = True
-    PORT = 8765
-    url = socket.gethostbyname(socket.gethostname()) + ":" + str(PORT)
-    print "Share this link: " + "http://" + url
-    Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-    httpd = SocketServer.TCPServer(("", PORT), Handler)
-    httpd.handle_request()
-
-def Login(name, userData):
-    print("Logging you into Facebook...")
-    # lulz lulz lulz
-    # Do not do in real life.  Please.
-    # Writes to file
-    f = open(flagFile, 'wt')
-    f.write("{0}\n{1}\n".format(name,userData[name]["password"]))
-    f.close()
-
-    #Shares directory for chrome plugin to access one time
-    ShareFolder()
-
-    #Clear file
-    f = open(flagFile, 'wt')
-    f.close()
+import slurpy
 
 # Save the user data back to disk
 def SaveUserData(userData):
-    f = open(userFile, 'w')
-    pickle.dump(userData, f)
-    f.close()
+    with open(userFile, 'w') as f:
+        pickle.dump(userData, f)
 
 # Signals chrome extension to log in
 flagFile = "status.txt"
 
 # Read in classifier
 if (len(sys.argv) < 3):
-    print("{0} classifierFile userFile".format(sys.argv[0]))
-    exit()
+    classifierName = "svmdata"
+    userFile = "userdata"
+    #print("{0} classifierFile userFile".format(sys.argv[0]))
+    #exit()
 else:
     classifierName = sys.argv[1]
     userFile = sys.argv[2]
@@ -59,6 +37,7 @@ if loadedC == None:
     print("Loading classifier failed.")
     exit()
 labels,ids,clf = loadedC
+print(loadedC)
 
 
 userData = acquire.LoadFile(userFile)
@@ -72,45 +51,48 @@ if (len(sys.argv) > 3):
 else:
     camera = acquire.Acquire()
 
-print("Please enter username:")
-name = raw_input()
-if name in userData:
-    if (camera.CheckPassword(clf, userData[name]["handshake"], ids)):
-        print("You successfully entered your password")
-        Login(name, userData)
-    else:
-        print("You entered an incorrect password multiple times")
-        resp = raw_input("Would you like to reset your password [y/n]?\n")
-        print(resp)
-        if resp.lower() == "y" or resp.lower() == "yes":
-            print("Sending verification code to registered phone number...")
-            texting.send_text("random")
-            resp = raw_input("Please enter the verification code: ")
-            
-            if resp == "31415":
-                print("Verification code is correct!")
-                print("Beginning password reset procedure.")
+# Read in gesture - default to not allowing empty gesture
 
-                password = camera.TrainPassword(clf, ids)
-                if (len(password) == 0):
-                    print("You did not enter a password.  Exiting")
-                else:
-                    userData[name] = {"handshake" : password, "password" : userData[name]["password"]}
-                    SaveUserData(userData)
-                    print("Successfully trained your password.  Logging you into Facebook now.")
-                    Login(name, userData)
-        else:
-            print("Exiting...")
-else:
-    print("You still need to set a password.")
-    #Testing purposes - does not claim to be secure
-    print("Please enter Facebook password:")
-    fb = raw_input()
-    password = camera.TrainPassword(clf, ids)
-    if (len(password) == 0):
-        print("You did not enter a password.  Exiting")
+def getGesture(last = labels['none']):
+    return camera.GetGesture(clf, last)
+
+def decodePassword(user, handshake):
+    #...fluidity over security?
+    key = ' '.join([str(x) for x in handshake])
+    # Pad key and password
+    if (len(key) % 16 != 0):
+        key += ' ' * (16 - len(key) % 16)
+    cipher = AES.new(key)
+    if user in userData:
+        password = cipher.decrypt(userData[user])
+        password = string.rstrip(password, '0')
+        return password[:-1]
     else:
-        userData[name] = {"handshake" : password, "password" : fb}
-        SaveUserData(userData)
-        print("Successfully trained your password.  Logging you into Facebook now.")
-        Login(name, userData)
+        return None
+
+def addUser(user, password, handshake):
+    print("TEST")
+    key = ' '.join([str(x) for x in handshake])
+    # Pad key and password
+    if (len(key) % 16 != 0):
+        key += ' ' * (16 - len(key) % 16)
+    cipher = AES.new(key)
+    password += '1'
+    if (len(password) % 16 != 0):
+        password += '0' * (16 - len(password) % 16)
+    print(password)
+    userData[user] = cipher.encrypt(password)
+    SaveUserData(userData)
+    return True
+
+
+# Create server for plugin to call functions
+server = slurpy.Slurpy()
+
+# Register publicly accessible functions on server
+server.register(getGesture)
+server.register(decodePassword)
+server.register(addUser)
+server.register(getGesture)
+
+#server.start()
