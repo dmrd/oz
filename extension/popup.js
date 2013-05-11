@@ -1,3 +1,33 @@
+
+//method invoked by the python code
+var js_sum = function(a, b) {
+    return a + b;
+}
+
+//wait for loaded event
+python.on('loaded', function(evt) {
+          
+  python.dirname('/etc/passwd', function(response) {
+                 console.log("Directory name" + response);
+                 });
+  
+  //module invoke
+  python.os.getenv("HOME", function(response) {
+                   console.log("Home variable " + response);
+                   });
+  
+  //module invoke
+  python.os.getuid(function(uid) {
+                   console.log("Current UID " + uid);
+                   });
+  
+  });
+
+
+
+
+
+
 function loginToFacebook(username, password) {
     chrome.tabs.executeScript({
       code: 'document.getElementById("email").value = "'+username+'"; document.getElementById("pass").value = "'+password+'"; document.getElementById("login_form").submit();'
