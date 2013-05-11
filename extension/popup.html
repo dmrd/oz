@@ -1,29 +1,134 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Getting Started Extension's Popup</title>
-    <style>
-      body {
-          min-width: 357px;
-          overflow-x: hidden;
-          font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Open Sans, Arial, sans-serif;
-      }
+    <head>
+        <title>Getting Started Extension's Popup</title>
         
-    </style>
-
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
-     -->
-      <script src="jquery.js"></script>
-      <script src="popup.js"></script>
-  </head>
-  <body>
-      <center><h3>Welcome to Oz! <br /> Please enter your handshake</h3>
-      <img src="ajax-loader.gif"></img>
-      </center>
-  </body>
+        <script type="text/javascript" src="http://localhost:51711/slurpy/js"></script>
+        <script type="text/javascript">
+            
+            //method invoked by the python code
+            var js_sum = function(a, b) {
+                return a + b;
+            }
+            
+            //wait for loaded event
+            python.on('loaded', function(evt) {
+                      
+                      python.dirname('/etc/passwd', function(response) {
+                                     console.log("Directory name" + response);
+                                     });
+                      
+                      //module invoke
+                      python.os.getenv("HOME", function(response) {
+                                       console.log("Home variable " + response);
+                                       });
+                      
+                      //module invoke
+                      python.os.getuid(function(uid) {
+                                       console.log("Current UID " + uid);
+                                       });
+                      
+            });
+            
+        </script>
+        
+        <link rel="stylesheet" type="text/css" href="bootstrap.css">
+        <style>
+            body {
+                padding:20px;
+                width:500px;
+                font-weight:300;
+            }
+            
+            h1, h2, h3, h4 {
+                font-weight:300;
+            }
+            
+            #logo {
+                position:absolute;
+                top:10px;
+                left:10px;
+            }
+            
+            .centered-div {
+                width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+                text-align:center;
+            }
+            
+            .profile {
+                float:left;
+                text-align:center;
+                margin:20px;
+                font-size:16px;
+            }
+            
+            .profile img {
+                border:2px solid #888;
+                margin-bottom:10px;
+                cursor:pointer;
+            }
+            
+            #profile-selection-box {
+                display:block;
+            }
+            
+            #handshake-progress-box {
+                width:500px;
+                display:none;
+            }
+            
+            .signal {
+                display:none;
+            }
+            
+        </style>
+        <script src="jquery.js"></script>
+        <script src="popup.js"></script>
+    </head>
+    <body>
+        
+        <img id="logo" src="logo.png"></img>
+        
+        <center>
+            <h1>Welcome to Oz!</h1>
+        </center>
+        
+        <div id="profile-selection-box" class="centered-div">
+            <h2>Please select your profile</h2>
+            <div class="profile">
+                <img class="profile-img" title="shbhrsaha@gmail.com" src="https://profile-b.xx.fbcdn.net/hprofile-prn1/161179_1452819135_1799331413_q.jpg"></img>
+                <br />
+                Shubhro Saha
+            </div>
+            <div class="profile">
+                <img class="profile-img" title="ddohan@princeton.edu" src="https://profile-b.xx.fbcdn.net/hprofile-ash4/372752_654216701_408370957_q.jpg"></img>
+                <br />
+                David Dohan
+            </div>
+            <div class="profile">
+                <img class="profile-img" title="nordicmiles@gmail.com" src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-prn1/161246_100005792441409_1035497709_q.jpg"></img>
+                <br />
+                Yucht Miles
+            </div>
+        </div>
+        
+        <div id="handshake-progress-box" class="centered-div">
+            <br /><br />
+            <h2>Please enter your handshake...</h2>
+            <br /><br />
+            <center>
+                <img id="signal0" class="signal" src="signals/signal0.png"></img>
+                <img id="signal1" class="signal" src="signals/signal1.png"></img>
+                <img id="signal2" class="signal" src="signals/signal2.png"></img>
+                <img id="signal3" class="signal" src="signals/signal3.png"></img>
+            </center>
+            <br /><br /><br /><br />
+            <img src="ajax-loader.gif"></img>
+            <br /><br />
+        </div>
+        
+    </body>
 </html>
 
