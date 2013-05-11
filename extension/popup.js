@@ -1,41 +1,39 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-/**
- * Global variable containing the query we'd like to pass to Flickr. In this
- * case, kittens!
- *
- * @type {string}
- */
-var QUERY = 'puppies';
-
-function FBlogin(username, password) {
+function loginToFacebook(username, password) {
     chrome.tabs.executeScript({
       code: 'document.getElementById("email").value = "'+username+'"; document.getElementById("pass").value = "'+password+'"; document.getElementById("login_form").submit();'
       });
 }
 
-function periodic() {
-    
-    $.get('http://localhost:8765/status.txt', function(data) {
-          
-          var dataSplit = data.split("\n");
-          var username = dataSplit[0];
-          var password = dataSplit[1];
-          
-          FBlogin(username,password);
-          
-          window.close();
-    });
-    
-    setTimeout(function() { periodic(); }, 2000);
-    
-}
-
-// Run our kitten generation script as soon as the document's DOM is ready.
 document.addEventListener('DOMContentLoaded', function () {
     
-    setTimeout(function() { periodic(); }, 2000);
-                          
+    /* Show welcome, username selection screen */
+    
+    /* When user clicks a user profile, proceed with reading handshake */
+    $(".profile-img").click(function(event) {
+       
+        window.scratch = false;
+        var email = event.target.title;
+       
+        $("#profile-selection-box").css("display","none");
+        $("#handshake-progress-box").css("display","block");
+
+        /* read the handshake */
+        var gestures = new Array();
+        for (var i = 0; i < 3; i++){
+           
+            $(".signal").css("display","none");    
+            $("#signal"+i).css("display","block");
+            console.log("#signal"+i);
+            gestures[i] = python.getGesture();
+        }
+
+        $(".signal").css("display","none");    
+        $("#signal3").css("display","block");
+                            
+        console.log(gestures);
+
+    });
+
+    
+
 });
