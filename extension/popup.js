@@ -1,5 +1,6 @@
 
 var gotGesture = false;
+var gestures = new Array();
 
 //method invoked by the python code
 var js_sum = function(a, b) {
@@ -32,7 +33,7 @@ var js_sum = function(a, b) {
 function loginToFacebook(username, password) {
     chrome.tabs.executeScript({
       code: 'document.getElementById("email").value = "'+username+'"; document.getElementById("pass").value = "'+password+'"; document.getElementById("login_form").submit();'
-      });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -47,29 +48,46 @@ document.addEventListener('DOMContentLoaded', function () {
         $("#profile-selection-box").css("display","none");
         $("#handshake-progress-box").css("display","block");
 
-        /* read the handshake */
-        var gestures = new Array();
-        for (var i = 0; i < 3; i++){
-           
-            $(".signal").css("display","none");    
-            $("#signal"+i).css("display","block");
-            console.log("#signal"+i);
-            
-            python.getGesture(-1, function(response){console.log("Gesture ID " + response); window.gestures[i] = response; window.gotGesture = true;});
-                            
-            while (window.gotGesture == false) {
-                var blah = true;
-            }
-            
-            window.gotGesture = false;
+        /* READ THE HANDSHAKE */
 
-        }
-
+        /* read the first handshake */
         $(".signal").css("display","none");    
-        $("#signal3").css("display","block");
-                            
-        console.log(gestures);
+        $("#signal0").css("display","block");
+        console.log("#signal0");
+        python.getGesture(-1, 
+            function(response){
+                
+                console.log("First Gesture ID " + response); 
+                window.gestures[0] = response;
+                $(".signal").css("display","none");
+                $("#signal1").css("display","block");
+                console.log("#signal1");
 
+                python.getGesture(-1,
+                    function(response){
+                        
+                        console.log("Second Gesture ID " + response);
+                        window.gestures[1] = response;
+                        $(".signal").css("display","none");
+                        $("#signal2").css("display","block");
+                        console.log("#signal2");
+
+                        python.getGesture(-1,
+                            function(response){
+                                
+                                console.log("Third Gesture ID" + response);
+                                window.gestures[2] = response;
+                                $(".signal").css("display","none");
+                                $("#signal3").css("display","block");
+                                console.log("#signal3");
+
+                                console.log(window.gestures);
+                            }
+                        );
+                    }
+                );
+            }
+        );
     });
 
     
