@@ -1,9 +1,7 @@
 import pickle
 import sys
-import os
 import string
 from Crypto.Cipher import AES
-from os.path import dirname
 
 # Our modules
 sys.path.append("../util")
@@ -51,6 +49,7 @@ else:
 # Read in gesture - default to not allowing empty gesture
 #@report
 def getGesture(last=labels['none']):
+    return 0
     return camera.GetGesture(clf, last)
 
 
@@ -72,7 +71,11 @@ def decodePassword(user, handshake):
 
 
 #@report
-def addUser(user, fullname, password, handshake):
+def addUser(email, fullname, password, handshake):
+    print("User: " + email)
+    print("Fullname: " + fullname)
+    print("Password: " + str(password))
+    print("Handshake: " + str(handshake))
     key = ' '.join([str(x) for x in handshake])
     # Pad key and password
     if (len(key) % 16 != 0):
@@ -81,9 +84,9 @@ def addUser(user, fullname, password, handshake):
     password += '1'
     if (len(password) % 16 != 0):
         password += '0' * (16 - len(password) % 16)
-    print(password)
-    userData[user] = {'fullname': fullname,
-                      'password': cipher.encrypt(password)}
+    print("Pass: " + password)
+    userData[email] = {'fullname': fullname,
+                       'password': cipher.encrypt(password)}
     SaveUserData(userData)
     return True
 
@@ -108,8 +111,6 @@ server.register(decodePassword)
 server.register(addUser)
 server.register(listUsers)
 server.register(sendText)
-server.register(os)
-server.register(dirname)
 
-#server.methods
+print(server.methods)
 server.start()

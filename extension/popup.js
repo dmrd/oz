@@ -13,35 +13,15 @@ var globalGestures;
 var globalRemaining;
 var globalCallback;
 
-// Make sure slurpy loaded properly
- python.on('ready', function(evt) {
-                python.dirname('/etc/passwd', function(response) {
-                    console.log("Directory name" + response);
-                });
-
-                python.os.getenv("HOME", function(response) {
-                    console.log("Home variable " + response);
-                });
-
-            
-                python.os.getuid(function(uid) {
-                    console.log("Current UID " + uid);
-                });
-
-                python.getGesture(function(response) {
-                    console.log("Gesture ID" + response);
-                });
-});
-
 function loadProfiles(){
     python.listUsers(
-                     
         function(response){
+            console.log(response);
             // response is a list of tuples
             for (var i = 0; i < response.length; i++) {
                 var email = response[i][0];
                 var fullname = response[i][1];
-                $("profile-selection-box").append('<div class="profile"><img class="profile-img" title="'+email+'" src="https://profile-b.xx.fbcdn.net/hprofile-prn1/161179_1452819135_1799331413_q.jpg"></img><br />'+fullname+'</div>');
+                $("#profile-selection-box").append('<div class="profile"><img class="profile-img" title="'+email+'" src="https://profile-b.xx.fbcdn.net/hprofile-prn1/161179_1452819135_1799331413_q.jpg"></img><br />'+fullname+'</div>');
             }
         });
 }
@@ -71,11 +51,15 @@ function decode(gestures) {
 
 function addUser(gestures) {
     console.log("Sending off user data to server")
+    console.log(window.email)
+    console.log(window.fullname)
+    console.log(window.password)
     console.log(gestures)
+    //Arguments need to be out of order... (gesture <-> password)
     python.addUser(window.email, 
             window.fullname,
-            window.password,
             gestures,
+            window.password,
             function(response){
                 showScreen("profile-selection-box");
                 loadProfiles();
@@ -123,7 +107,7 @@ function readPassword(total, callback) {
 document.addEventListener('DOMContentLoaded', function () {
 
     /* Show welcome, username selection screen */
-    loadProfiles();
+    python.on('ready', function(evt) { loadProfiles(); });
 
     $("#add-user-button").click(function(event){
     
