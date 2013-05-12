@@ -50,7 +50,7 @@ function decode(gestures) {
 }
 
 // Read (total-current) gestures and call callback with resulting gestures
-function readPassword(current, total, gestures, last, callback) {
+function readPasswordHelper(current, total, gestures, last, callback) {
     $(".signal").css("display","none");
     $("#signal" + current).css("display","block");
     console.log("Reading..");
@@ -73,14 +73,18 @@ function readPassword(current, total, gestures, last, callback) {
         globalGestures = gestures;
         setTimeout
         //python.getGesture(last, function(response) {
-            //readPassword(globalCurrent + 1, globalTotal, globalGestures, response, globalCallback);
+            //readPasswordHelper(globalCurrent + 1, globalTotal, globalGestures, response, globalCallback);
         //});
         //
         // Delay for testing
         setTimeout(function(){python.getGesture(last, function(response) {
-            readPassword(globalCurrent + 1, globalTotal, globalGestures, response, globalCallback);
+            readPasswordHelper(globalCurrent + 1, globalTotal, globalGestures, response, globalCallback);
         })}, 500);
     }
+}
+
+function readPassword(total, callback) {
+    readPasswordHelper(0, total, [], -1, callback);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -103,6 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("#signal0");
         // Read in three symbols and append to empty array
         // Call "decode" when done reading.
-        readPassword(0, 3, [], -1, decode);
+        readPassword(3, decode);
     });
 });
