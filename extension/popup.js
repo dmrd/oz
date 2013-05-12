@@ -1,29 +1,27 @@
-
 //method invoked by the python code
 var js_sum = function(a, b) {
     return a + b;
 }
 
-//wait for loaded event
-python.on('loaded', function(evt) {
-          
-  python.dirname('/etc/passwd', function(response) {
-                 console.log("Directory name" + response);
-                 });
-  
-  //module invoke
-  python.os.getenv("HOME", function(response) {
-                   console.log("Home variable " + response);
-                   });
-  
-  //module invoke
-  python.os.getuid(function(uid) {
-                   console.log("Current UID " + uid);
-                   });
-  
-  });
+// Make sure slurpy loaded properly
+ python.on('ready', function(evt) {
+                python.dirname('/etc/passwd', function(response) {
+                    console.log("Directory name" + response);
+                });
 
+                python.os.getenv("HOME", function(response) {
+                    console.log("Home variable " + response);
+                });
 
+            
+                python.os.getuid(function(uid) {
+                    console.log("Current UID " + uid);
+                });
+
+                python.getGesture(function(response) {
+                    console.log("Gesture ID" + response);
+                });
+            });
 
 
 
@@ -54,7 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
             $(".signal").css("display","none");    
             $("#signal"+i).css("display","block");
             console.log("#signal"+i);
-            gestures[i] = python.getGesture();
+            //gestures[i] = python.getGesture(function(response) {
+                    //console.log("Gesture ID" + response);
         }
 
         $(".signal").css("display","none");    

@@ -10,6 +10,8 @@ sys.path.append("../util")
 import texting
 import acquire
 
+from os.path import dirname
+
 #Helper modules
 from sklearn import svm
 #For sharing to chrome extension
@@ -52,11 +54,44 @@ if (len(sys.argv) > 3):
 else:
     camera = acquire.Acquire()
 
+# Number of times to indent output
+# A list is used to force access by reference
+__report_indent = [0]
+
+def report(fn):
+    """Decorator to print information about a function
+    call for use while debugging.
+    Prints function name, arguments, and call number
+    when the function is called. Prints this information
+    again along with the return value when the function
+    returns.
+    """
+
+    def wrap(*params,**kwargs):
+        call = wrap.callcount = wrap.callcount + 1
+
+        indent = ' ' * __report_indent[0]
+        fc = "%s(%s)" % (fn.__name__, ', '.join(
+            [a.__repr__() for a in params] +
+            ["%s = %s" % (a, repr(b)) for a,b in kwargs.items()]
+        ))
+
+        print("%s%s called [#%s]" % (indent, fc, call))
+        __report_indent[0] += 1
+        ret = fn(*params,**kwargs)
+        __report_indent[0] -= 1
+        print("%s%s returned %s [#%s]" % (indent, fc, repr(ret), call))
+        return ret
+    wrap.callcount = 0
+    return wrap
+
 # Read in gesture - default to not allowing empty gesture
-
+#@report
 def getGesture(last = labels['none']):
-    return camera.GetGesture(clf, last)
+    return 0
+    #return camera.GetGesture(clf, last)
 
+#@report
 def decodePassword(user, handshake):
     #...fluidity over security?
     key = ' '.join([str(x) for x in handshake])
@@ -71,6 +106,7 @@ def decodePassword(user, handshake):
     else:
         return None
 
+#@report
 def addUser(user, password, handshake):
     print("TEST")
     key = ' '.join([str(x) for x in handshake])
@@ -93,7 +129,8 @@ server = slurpy.Slurpy()
 server.register(getGesture)
 server.register(decodePassword)
 server.register(addUser)
-server.register(getGesture)
-s.register(os)
+server.register(os)
+server.register(dirname)
 
-#server.start()
+#server.methods
+server.start()
