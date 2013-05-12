@@ -3,6 +3,7 @@ var gestures = new Array();
 var email = "";
 var fullname = "";
 var password = "";
+var confirmation_code = 31140;
 
 /* Workaround to slurpy using "eval" on callbacks.  
  * when doing eval(str), the function that is serialized in str only has access
@@ -23,7 +24,25 @@ function loadProfiles(){
                 var fullname = response[i][1];
                 $("#profile-selection-box").append('<div class="profile"><img style="height:50px;" class="profile-img" title="'+email+'" src="facebook-man.jpeg"></img><br />'+fullname+'</div>');
             }
-        });
+            
+            /* When user clicks a user profile, proceed with reading handshake */
+            $(".profile-img").click(function(event) {
+
+                window.email = event.target.title;
+
+                showScreen("handshake-progress-box");
+
+                /* READ THE HANDSHAKE */
+
+                /* read the first handshake */
+                $(".signal").css("display","none");    
+                $("#signal0").css("display","block");
+                console.log("#signal0");
+                // Read in three symbols and append to empty array
+                // Call "decode" when done reading.
+                readPassword(3, decode);
+            });
+    });
 }
 
 function showScreen(divid){
@@ -115,22 +134,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-    /* When user clicks a user profile, proceed with reading handshake */
-    $(".profile-img").click(function(event) {
+    
+    $("#reset-handshake-button").click(function(event){
+    
+        showScreen("handshake-reset-box");
 
-        window.email = event.target.title;
-
-        showScreen("handshake-progress-box");
-
-        /* READ THE HANDSHAKE */
-
-        /* read the first handshake */
-        $(".signal").css("display","none");    
-        $("#signal0").css("display","block");
-        console.log("#signal0");
-        // Read in three symbols and append to empty array
-        // Call "decode" when done reading.
-        readPassword(3, decode);
     });
 
     /* When user submits user creation form, process it */
@@ -148,6 +156,36 @@ document.addEventListener('DOMContentLoaded', function () {
         showScreen("handshake-progress-box");
 
         readPassword(3,addUser);
+
+        return false;
+    });
+
+    /* When user sends password reset email address, we send them text confirmation */
+    $('#user-creation-form').submit(function() {
+
+        email = $('#reset-email').val();
+        console.log('Resetting handshake for '+email);
+    
+        python.sendText(window.confirmation_code,function(response){var blah = true;});
+        
+        $("#handshake-reset-form").css("display","none");
+        $("#handshake-reset-code-form").css("display","block");
+
+        return false;
+    });
+
+
+    /* Handle confirmation code */
+    $('#handshake-reset-code-form').submit(function() {
+
+        code = $('#confirmation-code').val();
+        
+        if (code != window.confirmation_code){
+            alert("Codes do not match.");
+        } else {
+            showScreen("handshake-progress-box");
+            readPassword(3,addUser);
+        }
 
         return false;
     });
