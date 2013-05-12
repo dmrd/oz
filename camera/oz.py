@@ -67,14 +67,14 @@ def decodePassword(handshake, email):
     if (len(key) % 16 != 0):
         key += '-' * (16 - len(key) % 16)
     print("Email: " + str(email))
-    print("Key: " + str(key))
+    #print("Key: " + str(key))
     cipher = AES.new(key)
     if email in userData:
         password = cipher.decrypt(userData[email]['password'])
         password = string.rstrip(password, '0')
         try:
             password.encode('utf-8')
-            print(password[:-1])
+            #print(password[:-1])
             return password[:-1]
         except:
             print("Failure")
@@ -94,7 +94,7 @@ def addUser(fullname, email, password, handshake):
     # Pad key and password
     if (len(key) % 16 != 0):
         key += '-' * (16 - len(key) % 16)
-    print(key)
+    #print(key)
     cipher = AES.new(key)
     password += '1'
     if (len(password) % 16 != 0):
@@ -118,6 +118,7 @@ def getName(email):
         return userData[email]['fullname']
     else:
         return "NA"
+
 
 def sendText(code):
     texting.send_text(str(code))
