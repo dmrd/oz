@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
             $("#signal"+i).css("display","block");
             console.log("#signal"+i);
             
-            gestures[i] = python.getGesture(-1, function(response){console.log("Gesture ID " + response); window.gotGesture = true;});
+            python.getGesture(-1, function(response){console.log("Gesture ID " + response); window.gestures[i] = response; window.gotGesture = true;});
                             
             while (window.gotGesture == false) {
                 var blah = true;
