@@ -1,6 +1,8 @@
 var gotGesture = false;
 var gestures = new Array();
 var email = "";
+var fullname = "";
+var password = "";
 
 /* Workaround to slurpy using "eval" on callbacks.  
  * when doing eval(str), the function that is serialized in str only has access
@@ -31,6 +33,24 @@ var globalCallback;
                 });
 });
 
+function loadProfiles(){
+    python.listUsers(
+                     
+        function(response){
+            // response is a list of tuples
+            for (var i = 0; i < response.length; i++) {
+                var email = response[i][0];
+                var fullname = response[i][1];
+                $("profile-selection-box").append('<div class="profile"><img class="profile-img" title="'+email+'" src="https://profile-b.xx.fbcdn.net/hprofile-prn1/161179_1452819135_1799331413_q.jpg"></img><br />'+fullname+'</div>');
+            }
+        });
+}
+
+function showScreen(divid){
+    $(".centered-div").css("display","none");
+    $("#"+divid).css("display","block");
+}
+
 
 function loginToFacebook(username, password) {
     console.log("Logging in")
@@ -46,6 +66,19 @@ function decode(gestures) {
             function(response){
                 loginToFacebook(window.email, response);
                 setTimeout(function(){window.close()}, 1000);
+            });
+}
+
+function addUser(gestures) {
+    console.log("Sending off user data to server")
+    console.log(gestures)
+    python.addUser(window.email, 
+            window.fullname,
+            window.password,
+            gestures,
+            function(response){
+                showScreen("profile-selection-box");
+                loadProfiles();
             });
 }
 
@@ -90,14 +123,20 @@ function readPassword(total, callback) {
 document.addEventListener('DOMContentLoaded', function () {
 
     /* Show welcome, username selection screen */
+    loadProfiles();
+
+    $("#add-user-button").click(function(event){
+    
+        showScreen("user-creation-box");
+
+    });
 
     /* When user clicks a user profile, proceed with reading handshake */
     $(".profile-img").click(function(event) {
 
         window.email = event.target.title;
 
-        $("#profile-selection-box").css("display","none");
-        $("#handshake-progress-box").css("display","block");
+        showScreen("handshake-progress-box");
 
         /* READ THE HANDSHAKE */
 
@@ -109,4 +148,27 @@ document.addEventListener('DOMContentLoaded', function () {
         // Call "decode" when done reading.
         readPassword(3, decode);
     });
+
+    /* When user submits user creation form, process it */
+    $('#user-creation-form').submit(function() {
+
+        window.fullname = $('#full-name').val();
+        window.email = $('#email').val();
+        window.password = $('#password').val();
+
+        console.log(fullname);
+        console.log(email);
+        console.log(password);
+        console.log('User creation form submitted. Now about to get handshake');
+   
+        showScreen("handshake-progress-box");
+
+        readPassword(3,addUser);
+
+        return false;
+    });
+
+
 });
+
+

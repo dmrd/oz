@@ -43,12 +43,17 @@
             }
             
             #profile-selection-box {
-                display:block;
+                display:none;
             }
             
             #handshake-progress-box {
                 width:500px;
                 display:none;
+            }
+            
+            #user-creation-box {
+                display:block;
+                
             }
             
             .signal {
@@ -64,7 +69,7 @@
         <img id="logo" src="logo.png"></img>
         
         <center>
-            <h1>Welcome to Oz!</h1>
+            <h1>Oz Authentication</h1>
         </center>
         
         <div id="profile-selection-box" class="centered-div">
@@ -84,6 +89,7 @@
                 <br />
                 Yucht Miles
             </div>
+            <a id="add-user-button" href="Add User"></a>
         </div>
         
         <div id="handshake-progress-box" class="centered-div">
@@ -100,6 +106,28 @@
             <img src="ajax-loader.gif"></img>
             <br /><br />
         </div>
+        
+        <div id="user-creation-box" class="centered-div">
+            <br /><br />
+            <h2>Add a User to Oz</h2>
+            <br /><br />
+            <center>
+                <form id="user-creation-form" class="form-inline">
+                    <input id="full-name" type="text" class="input" placeholder="Full Name" /><br /><br />
+                    <input id="email" type="text" class="input" placeholder="Facebook Email" /><br /><br />
+                    <input id="password" type="password" class="input" placeholder="Facebook Password" /><br /><br />
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    <input type="submit" class="btn btn-success" value="Add User"></input>
+                </form>
+            </center>
+        </div>
+        
+        
+        
+        
+        
+        
         
     </body>
 </html>
