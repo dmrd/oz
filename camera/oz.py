@@ -3,13 +3,13 @@ import sys
 import os
 import string
 from Crypto.Cipher import AES
+from os.path import dirname
 
 # Our modules
 sys.path.append("../util")
 import texting
 import acquire
 
-from os.path import dirname
 
 #For sharing to chrome extension
 import slurpy
@@ -20,15 +20,10 @@ def SaveUserData(userData):
     with open(userFile, 'w') as f:
         pickle.dump(userData, f)
 
-# Signals chrome extension to log in
-flagFile = "status.txt"
-
-# Read in classifier
+# Read in classifier and user data
 if (len(sys.argv) < 3):
     classifierName = "svmdata"
     userFile = "userdata"
-    #print("{0} classifierFile userFile".format(sys.argv[0]))
-    #exit()
 else:
     classifierName = sys.argv[1]
     userFile = sys.argv[2]
@@ -46,7 +41,7 @@ if userData is None or type(userData) is not dict:
     print("No userdata found")
     userData = {}
 
-#print(userData)
+print(userData)
 if (len(sys.argv) > 3):
     camera = acquire.Acquire(debug=1)
 else:
@@ -56,13 +51,12 @@ else:
 # Read in gesture - default to not allowing empty gesture
 #@report
 def getGesture(last=labels['none']):
-    return 0
-    #return camera.GetGesture(clf, last)
+    return camera.GetGesture(clf, last)
 
 
 #@report
 def decodePassword(user, handshake):
-    return "chem4life"
+    return "chem4life"  # Temporarily hardcoded for testing purposes
     #...fluidity over security?
     key = ' '.join([str(x) for x in handshake])
     # Pad key and password
@@ -70,7 +64,7 @@ def decodePassword(user, handshake):
         key += ' ' * (16 - len(key) % 16)
     cipher = AES.new(key)
     if user in userData:
-        password = cipher.decrypt(userData[user])
+        password = cipher.decrypt(userData[user]['password'])
         password = string.rstrip(password, '0')
         return password[:-1]
     else:
@@ -78,8 +72,7 @@ def decodePassword(user, handshake):
 
 
 #@report
-def addUser(user, password, handshake):
-    print("TEST")
+def addUser(user, fullname, password, handshake):
     key = ' '.join([str(x) for x in handshake])
     # Pad key and password
     if (len(key) % 16 != 0):
@@ -89,13 +82,15 @@ def addUser(user, password, handshake):
     if (len(password) % 16 != 0):
         password += '0' * (16 - len(password) % 16)
     print(password)
-    userData[user] = cipher.encrypt(password)
+    userData[user] = {'fullname': fullname,
+                      'password': cipher.encrypt(password)}
     SaveUserData(userData)
     return True
 
 
+# Return list of (username, fullname) tuples
 def listUsers():
-    return userData.keys()
+    return [[key, userData[key]['fullname']] for key in userData.keys()]
 
 
 def sendText(code, to_number=None):
