@@ -2,21 +2,22 @@
 import cv2
 import numpy as np
 import pickle
-import sys
 from time import time
 
 #Various defaults
 THRESHOLD = 40
-THRESH_METHOD = 1 #1 to target darker blobs, 0 to target lighter ones
-CHANNEL = 1 #r, g, b = 0,1,2
+THRESH_METHOD = 1  # 1 to target darker blobs, 0 to target lighter ones
+CHANNEL = 1  # r, g, b = 0,1,2
 sizeBound = 30000
-KERNEL = (13,13)
+KERNEL = (13, 13)
 background = None
 CONSECUTIVE_FRAMES = 15
 ATTEMPTS = 3
+LIMIT = 150
+
 
 class Acquire:
-    def __init__(self, cam = 0, debug = 0):
+    def __init__(self, cam=1, debug=0):
         self.c = cv2.VideoCapture(cam)
         self.background = self.GetBackground()
         self.threshold = THRESHOLD
@@ -24,7 +25,7 @@ class Acquire:
         self.sizeBound = sizeBound
         self.debug = debug
 
-    def Setup(cam = 1):
+    def Setup(cam=1):
         """Return webcam object. Takes camera number as optional arg"""
         c = cv2.VideoCapture(cam)
         return c
@@ -35,29 +36,34 @@ class Acquire:
         try:
             background = channels[CHANNEL]
         except:
-            print 'Try fuxing around with the webcam, bro.'
+            print("Webcam not functioning")
             return None
         #background = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         return cv2.blur(background, KERNEL)
 
     # Capture image
     def GetFrame(self):
-        _,im = self.c.read()
+        _, im = self.c.read()
         return im
 
     #Return tuple of image and hand
-    def GetHand(self, threshold = None):
+    def GetHand(self, threshold=None):
         """Take picture and return image and isolated hand """
-        if threshold == None:
+        if threshold is None:
             threshold = self.threshold
         im = self.GetFrame()
         #imChannel = cv2.split(im)[CHANNEL]
         #imChannel = cv2.blur(imChannel, KERNEL)
         #diff = cv2.absdiff(imChannel,self.background)
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        ret,thresh = cv2.threshold(imgray, threshold, 256, self.threshold_method)
+        ret, thresh = cv2.threshold(imgray,
+                                    threshold,
+                                    256,
+                                    self.threshold_method)
 
-        contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(thresh,
+                                               cv2.RETR_TREE,
+                                               cv2.CHAIN_APPROX_SIMPLE)
         #contours, hierarchy = cv2.findContours(imgray,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         large = GetLargestContour(contours)
         hand = np.zeros((len(im),len(im[0])), np.uint8) #Black image
@@ -96,11 +102,15 @@ class Acquire:
             fit = clf.predict(hand.flatten())[0]
 
             #How long have they held the current shape?
-            if fit == last:
+            if fit == last and last != lastGesture:
                 repeated += 1
             else:
                 repeated = 0
                 last = fit
+
+            # Break after reading the same thing for a long time
+            if (repeated >= LIMIT):
+                break
         return last
 
     #Delay while still showing hand.
@@ -134,7 +144,7 @@ def FinishCapture():
 
 def LoadFile(filename):
     """Load the pickled file from filename
-    
+
         Return None if load fails
     """
     try:
@@ -143,5 +153,5 @@ def LoadFile(filename):
         f.close()
         return loaded
     except:
-        return None 
+        return None
 

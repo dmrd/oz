@@ -49,18 +49,24 @@ else:
 # Read in gesture - default to not allowing empty gesture
 #@report
 def getGesture(last=labels['none']):
-    return 0
-    return camera.GetGesture(clf, last)
+    if last in labels:
+        last = labels[last]
+    if (last < 0):
+        last = labels['none']
+    print(last)
+    gesture = ids[camera.GetGesture(clf, last)]
+    return gesture
 
 
 #@report
 def decodePassword(user, handshake):
-    return "chem4life"  # Temporarily hardcoded for testing purposes
+    #return "chem4life"  # Temporarily hardcoded for testing purposes
     #...fluidity over security?
     key = ' '.join([str(x) for x in handshake])
     # Pad key and password
     if (len(key) % 16 != 0):
-        key += ' ' * (16 - len(key) % 16)
+        key += '-' * (16 - len(key) % 16)
+    print(key)
     cipher = AES.new(key)
     if user in userData:
         password = cipher.decrypt(userData[user]['password'])
@@ -72,19 +78,21 @@ def decodePassword(user, handshake):
 
 #@report
 def addUser(email, fullname, password, handshake):
+    print("Adding user")
     print("User: " + email)
     print("Fullname: " + fullname)
-    print("Password: " + str(password))
+    #print("Password: " + str(password))
     print("Handshake: " + str(handshake))
     key = ' '.join([str(x) for x in handshake])
     # Pad key and password
     if (len(key) % 16 != 0):
-        key += ' ' * (16 - len(key) % 16)
+        key += '-' * (16 - len(key) % 16)
+    print(key)
     cipher = AES.new(key)
     password += '1'
     if (len(password) % 16 != 0):
         password += '0' * (16 - len(password) % 16)
-    print("Pass: " + password)
+    #print("Pass: " + password)
     userData[email] = {'fullname': fullname,
                        'password': cipher.encrypt(password)}
     SaveUserData(userData)
@@ -93,14 +101,13 @@ def addUser(email, fullname, password, handshake):
 
 # Return list of (username, fullname) tuples
 def listUsers():
-    return [[key, userData[key]['fullname']] for key in userData.keys()]
+    tuples = [[key, userData[key]['fullname']] for key in userData.keys()]
+    print(tuples)
+    return tuples
 
 
-def sendText(code, to_number=None):
-    if to_number is not None:
-        texting.send_text(code, to_number)
-    else:
-        texting.send_text(code)
+def sendText(code):
+    texting.send_text(code)
 
 # Create server for plugin to call functions
 server = slurpy.Slurpy()
