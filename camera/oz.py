@@ -59,25 +59,32 @@ def getGesture(last=labels['none']):
 
 
 #@report
-def decodePassword(user, handshake):
+def decodePassword(handshake, email):
     #return "chem4life"  # Temporarily hardcoded for testing purposes
     #...fluidity over security?
     key = ' '.join([str(x) for x in handshake])
     # Pad key and password
     if (len(key) % 16 != 0):
         key += '-' * (16 - len(key) % 16)
-    print(key)
+    print("Email: " + str(email))
+    print("Key: " + str(key))
     cipher = AES.new(key)
-    if user in userData:
-        password = cipher.decrypt(userData[user]['password'])
+    if email in userData:
+        password = cipher.decrypt(userData[email]['password'])
         password = string.rstrip(password, '0')
-        return password[:-1]
+        try:
+            password.encode('utf-8')
+            print(password[:-1])
+            return password[:-1]
+        except:
+            print("Failure")
+            return "password"
     else:
-        return None
+        return "password"
 
 
 #@report
-def addUser(email, fullname, password, handshake):
+def addUser(fullname, email, password, handshake):
     print("Adding user")
     print("User: " + email)
     print("Fullname: " + fullname)
@@ -106,8 +113,14 @@ def listUsers():
     return tuples
 
 
+def getName(email):
+    if email in userData:
+        return userData[email]['fullname']
+    else:
+        return "NA"
+
 def sendText(code):
-    texting.send_text(code)
+    texting.send_text(str(code))
 
 # Create server for plugin to call functions
 server = slurpy.Slurpy()
@@ -118,6 +131,7 @@ server.register(decodePassword)
 server.register(addUser)
 server.register(listUsers)
 server.register(sendText)
+server.register(getName)
 
 print(server.methods)
 server.start()

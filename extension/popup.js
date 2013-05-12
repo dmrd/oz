@@ -22,6 +22,8 @@ function loadProfiles(){
             for (var i = 0; i < response.length; i++) {
                 var email = response[i][0];
                 var fullname = response[i][1];
+                console.log("Email: " + email);
+                console.log("Fullname: " + fullname);
                 $("#profile-selection-box").append('<div class="profile"><img style="height:50px;" class="profile-img" title="'+email+'" src="facebook-man.jpeg"></img><br />'+fullname+'</div>');
             }
             
@@ -29,7 +31,7 @@ function loadProfiles(){
             $(".profile-img").click(function(event) {
 
                 window.email = event.target.title;
-
+                console.log("Email: " + window.email);
                 showScreen("handshake-progress-box");
 
                 /* READ THE HANDSHAKE */
@@ -61,7 +63,7 @@ function loginToFacebook(username, password) {
 function decode(gestures) {
     console.log("Decoding gestures")
     python.decodePassword(window.email, 
-            window.gestures,
+            gestures,
             function(response){
                 loginToFacebook(window.email, response);
                 setTimeout(function(){window.close()}, 1000);
@@ -161,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* When user sends password reset email address, we send them text confirmation */
-    $('#user-creation-form').submit(function() {
+    $('#handshake-reset-form').submit(function() {
 
         email = $('#reset-email').val();
         console.log('Resetting handshake for '+email);
@@ -184,7 +186,11 @@ document.addEventListener('DOMContentLoaded', function () {
             alert("Codes do not match.");
         } else {
             showScreen("handshake-progress-box");
-            readPassword(3,addUser);
+            python.getName(window.email, function(response){ 
+                        window.fullname = response;
+                        readPassword(3,addUser);
+            });
+            //readPassword(3,addUser);
         }
 
         return false;
