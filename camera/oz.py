@@ -1,5 +1,4 @@
 import pickle
-import hashlib
 import sys
 import os
 import string
@@ -12,10 +11,9 @@ import acquire
 
 from os.path import dirname
 
-#Helper modules
-from sklearn import svm
 #For sharing to chrome extension
 import slurpy
+
 
 # Save the user data back to disk
 def SaveUserData(userData):
@@ -36,60 +34,31 @@ else:
     userFile = sys.argv[2]
 
 loadedC = acquire.LoadFile(classifierName)
-if loadedC == None:
+if loadedC is None:
     print("Loading classifier failed.")
     exit()
-labels,ids,clf = loadedC
+labels, ids, clf = loadedC
 print(loadedC)
 
 
 userData = acquire.LoadFile(userFile)
-if userData == None or type(userData) is not dict:
+if userData is None or type(userData) is not dict:
     print("No userdata found")
     userData = {}
 
 #print(userData)
 if (len(sys.argv) > 3):
-    camera = acquire.Acquire(debug = 1)
+    camera = acquire.Acquire(debug=1)
 else:
     camera = acquire.Acquire()
 
-# Number of times to indent output
-# A list is used to force access by reference
-__report_indent = [0]
-
-def report(fn):
-    """Decorator to print information about a function
-    call for use while debugging.
-    Prints function name, arguments, and call number
-    when the function is called. Prints this information
-    again along with the return value when the function
-    returns.
-    """
-
-    def wrap(*params,**kwargs):
-        call = wrap.callcount = wrap.callcount + 1
-
-        indent = ' ' * __report_indent[0]
-        fc = "%s(%s)" % (fn.__name__, ', '.join(
-            [a.__repr__() for a in params] +
-            ["%s = %s" % (a, repr(b)) for a,b in kwargs.items()]
-        ))
-
-        print("%s%s called [#%s]" % (indent, fc, call))
-        __report_indent[0] += 1
-        ret = fn(*params,**kwargs)
-        __report_indent[0] -= 1
-        print("%s%s returned %s [#%s]" % (indent, fc, repr(ret), call))
-        return ret
-    wrap.callcount = 0
-    return wrap
 
 # Read in gesture - default to not allowing empty gesture
 #@report
-def getGesture(last = labels['none']):
+def getGesture(last=labels['none']):
     return 0
     #return camera.GetGesture(clf, last)
+
 
 #@report
 def decodePassword(user, handshake):
@@ -107,6 +76,7 @@ def decodePassword(user, handshake):
     else:
         return None
 
+
 #@report
 def addUser(user, password, handshake):
     print("TEST")
@@ -123,6 +93,17 @@ def addUser(user, password, handshake):
     SaveUserData(userData)
     return True
 
+
+def listUsers():
+    return userData.keys()
+
+
+def sendText(code, to_number=None):
+    if to_number is not None:
+        texting.send_text(code, to_number)
+    else:
+        texting.send_text(code)
+
 # Create server for plugin to call functions
 server = slurpy.Slurpy()
 
@@ -130,6 +111,8 @@ server = slurpy.Slurpy()
 server.register(getGesture)
 server.register(decodePassword)
 server.register(addUser)
+server.register(listUsers)
+server.register(sendText)
 server.register(os)
 server.register(dirname)
 
