@@ -181,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#handshake-reset-code-form').submit(function() {
 
         code = $('#confirmation-code').val();
+        window.password = $('#reset-fb-password').val();
         
         if (code != window.confirmation_code){
             alert("Codes do not match.");
