@@ -1,11 +1,7 @@
 
 var gotGesture = false;
 var gestures = new Array();
-
-//method invoked by the python code
-var js_sum = function(a, b) {
-    return a + b;
-}
+var email = "";
 
 // Make sure slurpy loaded properly
  python.on('ready', function(evt) {
@@ -28,8 +24,6 @@ var js_sum = function(a, b) {
 });
 
 
-
-
 function loginToFacebook(username, password) {
     chrome.tabs.executeScript({
       code: 'document.getElementById("email").value = "'+username+'"; document.getElementById("pass").value = "'+password+'"; document.getElementById("login_form").submit();'
@@ -37,14 +31,14 @@ function loginToFacebook(username, password) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    
+
     /* Show welcome, username selection screen */
-    
+
     /* When user clicks a user profile, proceed with reading handshake */
     $(".profile-img").click(function(event) {
-       
-        var email = event.target.title;
-       
+
+        window.email = event.target.title;
+
         $("#profile-selection-box").css("display","none");
         $("#handshake-progress-box").css("display","block");
 
@@ -56,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("#signal0");
         python.getGesture(-1, 
             function(response){
-                
+
                 console.log("First Gesture ID " + response); 
                 window.gestures[0] = response;
                 $(".signal").css("display","none");
@@ -65,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 python.getGesture(-1,
                     function(response){
-                        
+
                         console.log("Second Gesture ID " + response);
                         window.gestures[1] = response;
                         $(".signal").css("display","none");
@@ -74,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         python.getGesture(-1,
                             function(response){
-                                
+
                                 console.log("Third Gesture ID" + response);
                                 window.gestures[2] = response;
                                 $(".signal").css("display","none");
@@ -82,14 +76,21 @@ document.addEventListener('DOMContentLoaded', function () {
                                 console.log("#signal3");
 
                                 console.log(window.gestures);
+                                python.decodePassword(window.email, 
+                                    window.gestures,
+                                    function(response){
+                                        loginToFacebook(window.email, response);
+                                        window.close();
+                                    }
+                                    );
                             }
-                        );
+                            );
                     }
-                );
-            }
         );
+            }
+    );
     });
 
-    
+
 
 });

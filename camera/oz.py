@@ -93,6 +93,7 @@ def getGesture(last = labels['none']):
 
 #@report
 def decodePassword(user, handshake):
+    return "chem4life"
     #...fluidity over security?
     key = ' '.join([str(x) for x in handshake])
     # Pad key and password
