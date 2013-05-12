@@ -1,3 +1,6 @@
+
+var gotGesture = false;
+
 //method invoked by the python code
 var js_sum = function(a, b) {
     return a + b;
@@ -21,7 +24,7 @@ var js_sum = function(a, b) {
                 python.getGesture(function(response) {
                     console.log("Gesture ID" + response);
                 });
-            });
+});
 
 
 
@@ -39,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
     /* When user clicks a user profile, proceed with reading handshake */
     $(".profile-img").click(function(event) {
        
-        window.scratch = false;
         var email = event.target.title;
        
         $("#profile-selection-box").css("display","none");
@@ -52,8 +54,15 @@ document.addEventListener('DOMContentLoaded', function () {
             $(".signal").css("display","none");    
             $("#signal"+i).css("display","block");
             console.log("#signal"+i);
-            //gestures[i] = python.getGesture(function(response) {
-                    //console.log("Gesture ID" + response);
+            
+            gestures[i] = python.getGesture(-1, function(response){console.log("Gesture ID " + response); window.gotGesture = true;});
+                            
+            while (window.gotGesture == false) {
+                var blah = true;
+            }
+            
+            window.gotGesture = false;
+
         }
 
         $(".signal").css("display","none");    
