@@ -32,7 +32,11 @@ class Acquire:
     def GetBackground(self):
         im = self.GetFrame()
         channels = cv2.split(im)
-        background = channels[CHANNEL]
+        try:
+            background = channels[CHANNEL]
+        except:
+            print 'Try fuxing around with the webcam, bro.'
+            return None
         #background = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         return cv2.blur(background, KERNEL)
 
