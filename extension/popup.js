@@ -133,14 +133,16 @@ document.addEventListener('DOMContentLoaded', function () {
     $("#add-user-button").click(function(event){
     
         showScreen("user-creation-box");
-
+        $("#full-name").focus();
+                                
     });
 
     
     $("#reset-handshake-button").click(function(event){
     
         showScreen("handshake-reset-box");
-
+        $("#reset-email").focus();
+                                       
     });
 
     /* When user submits user creation form, process it */
@@ -172,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         $("#handshake-reset-form").css("display","none");
         $("#handshake-reset-code-form").css("display","block");
+        $("#confirmation-code").focus();
 
         return false;
     });
