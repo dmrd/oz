@@ -21,7 +21,7 @@ function loadProfiles(){
             for (var i = 0; i < response.length; i++) {
                 var email = response[i][0];
                 var fullname = response[i][1];
-                $("#profile-selection-box").append('<div class="profile"><img class="profile-img" title="'+email+'" src="https://profile-b.xx.fbcdn.net/hprofile-prn1/161179_1452819135_1799331413_q.jpg"></img><br />'+fullname+'</div>');
+                $("#profile-selection-box").append('<div class="profile"><img style="height:50px;" class="profile-img" title="'+email+'" src="facebook-man.jpeg"></img><br />'+fullname+'</div>');
             }
         });
 }
@@ -61,8 +61,8 @@ function addUser(gestures) {
             gestures,
             window.password,
             function(response){
-                showScreen("profile-selection-box");
-                loadProfiles();
+                //reload the extension
+                   location.reload();
             });
 }
 
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* Show welcome, username selection screen */
     python.on('ready', function(evt) { loadProfiles(); });
-
+                          
     $("#add-user-button").click(function(event){
     
         showScreen("user-creation-box");
